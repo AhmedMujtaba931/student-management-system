@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="THjG8ce24tbknv085Nff">
+    <mxGraphModel dx="774" dy="1851" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-1" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="&lt;div&gt;&lt;b&gt;STUDENTS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;PK StudentId&lt;/b&gt;&lt;/div&gt;&lt;div&gt;RegistrationNumber&lt;/div&gt;&lt;div&gt;FirstName&lt;/div&gt;&lt;div&gt;LastName&lt;/div&gt;&lt;div&gt;Email&lt;/div&gt;&lt;div&gt;PhoneNumber&lt;/div&gt;&lt;div&gt;DateOfBirth&lt;/div&gt;&lt;div&gt;Gender&lt;/div&gt;&lt;div&gt;Address&lt;/div&gt;&lt;div&gt;CreatedAt&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="140" x="330" y="-40" as="geometry" />
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-2" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="&lt;div&gt;&lt;b&gt;COURSES&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;PK CourseId&lt;/b&gt;&lt;/div&gt;&lt;div&gt;CourseCode&lt;/div&gt;&lt;div&gt;CourseName&lt;/div&gt;&lt;div&gt;CreditHours&lt;/div&gt;&lt;div&gt;Description&lt;/div&gt;&lt;div&gt;CreatedAt&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="120" x="340" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-4" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="&lt;div&gt;&lt;b&gt;ENROLLMENTS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;PK EnrollmentId&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK StudentId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK CourseId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;EnrollmentDate&lt;/div&gt;&lt;div&gt;Status&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="160" x="320" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-5" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="&lt;div&gt;&lt;b&gt;ATTENDANCE_RECORDS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;PK AttendanceId&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK StudentId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK CourseId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;AttendanceDate&lt;/div&gt;&lt;div&gt;Status&lt;/div&gt;&lt;div&gt;Remarks&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="160" x="60" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-6" parent="1" style="whiteSpace=wrap;html=1;align=center;" value="&lt;div&gt;&lt;b&gt;GRADES&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;PK GradeId&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK StudentId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;FK CourseId&lt;/i&gt;&lt;/div&gt;&lt;div&gt;AssessmentType&lt;/div&gt;&lt;div&gt;MarksObtained&lt;/div&gt;&lt;div&gt;TotalMarks&lt;/div&gt;&lt;div&gt;GradeLetter&lt;/div&gt;&lt;div&gt;Remarks&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="140" x="580" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-20" edge="1" parent="1" source="yBoH_ykEYZfBLn4aMx0A-1" style="fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="yBoH_ykEYZfBLn4aMx0A-4" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="360" y="340" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-21" edge="1" parent="1" style="fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="yBoH_ykEYZfBLn4aMx0A-4" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="400" y="448.92" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-22" edge="1" parent="1" source="yBoH_ykEYZfBLn4aMx0A-2" style="fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;elbow=vertical;libavoidRouting=1;" target="yBoH_ykEYZfBLn4aMx0A-5" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="540" />
+            </Array>
+            <mxPoint x="360" y="340" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-23" edge="1" parent="1" source="yBoH_ykEYZfBLn4aMx0A-2" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;libavoidRouting=1;" target="yBoH_ykEYZfBLn4aMx0A-6" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="540" />
+            </Array>
+            <mxPoint x="360" y="340" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-24" edge="1" parent="1" source="yBoH_ykEYZfBLn4aMx0A-1" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;libavoidRouting=1;" target="yBoH_ykEYZfBLn4aMx0A-5" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="50" />
+            </Array>
+            <mxPoint x="360" y="340" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yBoH_ykEYZfBLn4aMx0A-25" edge="1" parent="1" source="yBoH_ykEYZfBLn4aMx0A-1" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;libavoidRouting=1;" target="yBoH_ykEYZfBLn4aMx0A-6" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="50" />
+            </Array>
+            <mxPoint x="360" y="340" as="sourcePoint" />
+            <mxPoint x="460" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="normalization-panel" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=12;fontSize=13;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;DATABASE NORMALIZATION&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div&gt;&lt;b&gt;1NF — Atomic values:&lt;/b&gt; Each attribute stores a single value; no repeating groups.&lt;/div&gt;&lt;div&gt;&lt;b&gt;2NF — No partial dependency:&lt;/b&gt; Every non-key attribute depends on the table&#39;s primary key. The relationship data is separated into ENROLLMENTS, ATTENDANCE_RECORDS and GRADES.&lt;/div&gt;&lt;div&gt;&lt;b&gt;3NF — No transitive dependency:&lt;/b&gt; Non-key attributes describe their own entity and are not dependent on other non-key attributes.&lt;/div&gt;&lt;div&gt;&lt;b&gt;4NF — Multi-valued dependency check:&lt;/b&gt; Independent repeating academic facts are separated into ATTENDANCE_RECORDS and GRADES instead of storing multiple values in STUDENTS or COURSES.&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;KEY RELATIONSHIPS / JOINS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Students ↔ Enrollments ↔ Courses&lt;/div&gt;&lt;div&gt;Students ↔ AttendanceRecords ↔ Courses&lt;/div&gt;&lt;div&gt;Students ↔ Grades ↔ Courses&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;Example JOIN:&lt;/b&gt; Students JOIN Enrollments ON Students.StudentId = Enrollments.StudentId JOIN Courses ON Enrollments.CourseId = Courses.CourseId&lt;/div&gt;" vertex="1">
+          <mxGeometry height="300" width="700" x="50" y="670" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
