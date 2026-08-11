@@ -1,0 +1,85 @@
+@model StudentManagementSystem.Models.Course
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-3">
+        <h2>Edit Course</h2>
+        <p class="text-muted">Update the course information.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="CourseId" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="CourseCode" class="form-label"></label>
+                    <input asp-for="CourseCode"
+                           class="form-control" />
+                    <span asp-validation-for="CourseCode"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CourseName" class="form-label"></label>
+                    <input asp-for="CourseName"
+                           class="form-control" />
+                    <span asp-validation-for="CourseName"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CreditHours" class="form-label"></label>
+                    <input asp-for="CreditHours"
+                           class="form-control"
+                           type="number"
+                           min="1"
+                           max="6" />
+                    <span asp-validation-for="CreditHours"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="4"></textarea>
+                    <span asp-validation-for="Description"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
