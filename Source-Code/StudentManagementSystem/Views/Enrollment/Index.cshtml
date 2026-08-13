@@ -1,0 +1,128 @@
+@model IEnumerable<StudentManagementSystem.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>Enrollments</h2>
+            <p class="text-muted">Manage student course enrollments.</p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">
+            + Add Enrollment
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Enrollment Date</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var enrollment in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            @enrollment.Student?.RegistrationNumber
+                                        </strong>
+                                        <br />
+                                        <small class="text-muted">
+                                            @enrollment.Student?.FirstName
+                                            @enrollment.Student?.LastName
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            @enrollment.Course?.CourseCode
+                                        </strong>
+                                        <br />
+                                        <small class="text-muted">
+                                            @enrollment.Course?.CourseName
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @enrollment.EnrollmentDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @if (enrollment.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @enrollment.Status
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a asp-action="Details"
+                                           asp-route-id="@enrollment.EnrollmentId"
+                                           class="btn btn-sm btn-info">
+                                            Details
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@enrollment.EnrollmentId"
+                                           class="btn btn-sm btn-warning">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@enrollment.EnrollmentId"
+                                           class="btn btn-sm btn-danger">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <h5>No enrollments found.</h5>
+                    <p class="text-muted">
+                        Add an enrollment to get started.
+                    </p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
