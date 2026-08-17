@@ -10,6 +10,13 @@ namespace StudentManagementSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        private static readonly string[] ValidStatuses =
+        {
+            "Active",
+            "Completed",
+            "Dropped"
+        };
+
         public EnrollmentController(ApplicationDbContext context)
         {
             _context = context;
@@ -62,6 +69,8 @@ namespace StudentManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Enrollment enrollment)
         {
+            ValidateStatus(enrollment.Status);
+
             bool alreadyEnrolled = await _context.Enrollments
                 .AnyAsync(e =>
                     e.StudentId == enrollment.StudentId &&
@@ -78,9 +87,14 @@ namespace StudentManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                await LoadDropdowns(enrollment.StudentId, enrollment.CourseId);
+                await LoadDropdowns(
+                    enrollment.StudentId,
+                    enrollment.CourseId);
+
                 return View(enrollment);
             }
+
+            enrollment.EnrollmentDate = enrollment.EnrollmentDate.Date;
 
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
@@ -105,7 +119,9 @@ namespace StudentManagementSystem.Controllers
                 return NotFound();
             }
 
-            await LoadDropdowns(enrollment.StudentId, enrollment.CourseId);
+            await LoadDropdowns(
+                enrollment.StudentId,
+                enrollment.CourseId);
 
             return View(enrollment);
         }
@@ -119,6 +135,8 @@ namespace StudentManagementSystem.Controllers
             {
                 return NotFound();
             }
+
+            ValidateStatus(enrollment.Status);
 
             bool alreadyEnrolled = await _context.Enrollments
                 .AnyAsync(e =>
@@ -137,7 +155,10 @@ namespace StudentManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                await LoadDropdowns(enrollment.StudentId, enrollment.CourseId);
+                await LoadDropdowns(
+                    enrollment.StudentId,
+                    enrollment.CourseId);
+
                 return View(enrollment);
             }
 
@@ -151,7 +172,7 @@ namespace StudentManagementSystem.Controllers
 
             existingEnrollment.StudentId = enrollment.StudentId;
             existingEnrollment.CourseId = enrollment.CourseId;
-            existingEnrollment.EnrollmentDate = enrollment.EnrollmentDate;
+            existingEnrollment.EnrollmentDate = enrollment.EnrollmentDate.Date;
             existingEnrollment.Status = enrollment.Status;
 
             await _context.SaveChangesAsync();
@@ -202,6 +223,20 @@ namespace StudentManagementSystem.Controllers
             TempData["SuccessMessage"] = "Enrollment deleted successfully.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private void ValidateStatus(string? status)
+        {
+            if (string.IsNullOrWhiteSpace(status) ||
+                !ValidStatuses.Contains(
+                    status,
+                    StringComparer.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(
+                    nameof(Enrollment.Status),
+                    "Please select a valid enrollment status."
+                );
+            }
         }
 
         private async Task LoadDropdowns(
