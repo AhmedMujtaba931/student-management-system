@@ -1,0 +1,100 @@
+@model StudentManagementSystem.Models.AttendanceRecord
+
+@{
+    ViewData["Title"] = "Edit Attendance";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h2 class="fw-bold mb-1">Edit Attendance</h2>
+                <p class="text-muted mb-4">
+                    Update the attendance record.
+                </p>
+
+                <form asp-action="Edit" method="post">
+
+                    <input type="hidden"
+                           asp-for="AttendanceRecordId" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EnrollmentId"
+                               class="form-label fw-semibold">
+                            Student / Course
+                        </label>
+
+                        <select asp-for="EnrollmentId"
+                                asp-items="ViewBag.Enrollments"
+                                class="form-select">
+                            <option value="">-- Select Student / Course --</option>
+                        </select>
+
+                        <span asp-validation-for="EnrollmentId"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AttendanceDate"
+                               class="form-label fw-semibold">
+                        </label>
+
+                        <input asp-for="AttendanceDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="AttendanceDate"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Status"
+                               class="form-label fw-semibold">
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Late">Late</option>
+                            <option value="Excused">Excused</option>
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Save Changes
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

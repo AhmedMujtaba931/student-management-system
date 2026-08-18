@@ -1,0 +1,132 @@
+@model IEnumerable<StudentManagementSystem.Models.AttendanceRecord>
+
+@{
+    ViewData["Title"] = "Attendance";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">Attendance Management</h2>
+        <p class="text-muted mb-0">Manage student attendance records.</p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        + Add Attendance
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <h5>No attendance records found.</h5>
+                <p class="text-muted">
+                    Add an attendance record to get started.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @item.Enrollment?.Student?.FirstName
+                                        @item.Enrollment?.Student?.LastName
+                                    </strong>
+                                    <br />
+                                    <small class="text-muted">
+                                        @item.Enrollment?.Student?.RegistrationNumber
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @item.Enrollment?.Course?.CourseCode
+                                    <br />
+                                    <small class="text-muted">
+                                        @item.Enrollment?.Course?.CourseName
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @item.AttendanceDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @if (item.Status == "Present")
+                                    {
+                                        <span class="badge bg-success">
+                                            Present
+                                        </span>
+                                    }
+                                    else if (item.Status == "Absent")
+                                    {
+                                        <span class="badge bg-danger">
+                                            Absent
+                                        </span>
+                                    }
+                                    else if (item.Status == "Late")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Late
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Excused
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.AttendanceRecordId"
+                                       class="btn btn-sm btn-outline-info">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.AttendanceRecordId"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.AttendanceRecordId"
+                                       class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>

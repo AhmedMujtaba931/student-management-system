@@ -1,0 +1,64 @@
+@model StudentManagementSystem.Models.AttendanceRecord
+
+@{
+    ViewData["Title"] = "Attendance Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h2 class="fw-bold mb-4">Attendance Details</h2>
+
+                <dl class="row">
+
+                    <dt class="col-sm-4">Student</dt>
+                    <dd class="col-sm-8">
+                        @Model.Enrollment?.Student?.FirstName
+                        @Model.Enrollment?.Student?.LastName
+                    </dd>
+
+                    <dt class="col-sm-4">Registration No.</dt>
+                    <dd class="col-sm-8">
+                        @Model.Enrollment?.Student?.RegistrationNumber
+                    </dd>
+
+                    <dt class="col-sm-4">Course</dt>
+                    <dd class="col-sm-8">
+                        @Model.Enrollment?.Course?.CourseCode
+                        -
+                        @Model.Enrollment?.Course?.CourseName
+                    </dd>
+
+                    <dt class="col-sm-4">Attendance Date</dt>
+                    <dd class="col-sm-8">
+                        @Model.AttendanceDate.ToString("dd MMM yyyy")
+                    </dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        @Model.Status
+                    </dd>
+
+                </dl>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.AttendanceRecordId"
+                       class="btn btn-primary">
+                        Edit
+                    </a>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Back
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -5,15 +5,11 @@ namespace StudentManagementSystem.Models
     public class AttendanceRecord
     {
         [Key]
-        public int AttendanceId { get; set; }
+        public int AttendanceRecordId { get; set; }
 
         [Required]
-        [Display(Name = "Student")]
-        public int StudentId { get; set; }
-
-        [Required]
-        [Display(Name = "Course")]
-        public int CourseId { get; set; }
+        [Display(Name = "Enrollment")]
+        public int EnrollmentId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -24,12 +20,7 @@ namespace StudentManagementSystem.Models
         [StringLength(20)]
         public string Status { get; set; } = "Present";
 
-        [StringLength(250)]
-        public string? Remarks { get; set; }
-
-        // Navigation Properties
-        public Student? Student { get; set; }
-
-        public Course? Course { get; set; }
+        // Navigation Property
+        public Enrollment? Enrollment { get; set; }
     }
 }
