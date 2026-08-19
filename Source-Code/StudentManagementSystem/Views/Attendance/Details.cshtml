@@ -1,64 +1,211 @@
-@model StudentManagementSystem.Models.AttendanceRecord
+@model StudentManagementSystem.Models.AttendanceSession
 
 @{
-    ViewData["Title"] = "Attendance Details";
+    ViewData["Title"] = "Lecture Details";
+
+    var records = Model.AttendanceRecords ?? new List<StudentManagementSystem.Models.AttendanceRecord>();
+
+    var total = records.Count;
+    var present = records.Count(x => x.Status == "Present");
+    var absent = records.Count(x => x.Status == "Absent");
+    var late = records.Count(x => x.Status == "Late");
+
+    var percentage = total > 0
+        ? Math.Round((double)present / total * 100, 1)
+        : 0;
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-7">
+<div class="dashboard-page">
 
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-                <h2 class="fw-bold mb-4">Attendance Details</h2>
+        <div>
+            <span class="dashboard-eyebrow">
+                ATTENDANCE DETAILS
+            </span>
 
-                <dl class="row">
+            <h1 class="fw-bold mb-1">
+                Lecture #@Model.LectureNumber
+            </h1>
 
-                    <dt class="col-sm-4">Student</dt>
-                    <dd class="col-sm-8">
-                        @Model.Enrollment?.Student?.FirstName
-                        @Model.Enrollment?.Student?.LastName
-                    </dd>
+            <p class="text-muted mb-0">
+                @Model.Course?.CourseCode -
+                @Model.Course?.CourseName
+            </p>
+        </div>
 
-                    <dt class="col-sm-4">Registration No.</dt>
-                    <dd class="col-sm-8">
-                        @Model.Enrollment?.Student?.RegistrationNumber
-                    </dd>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit"
+               asp-route-id="@Model.AttendanceSessionId"
+               class="btn btn-primary">
+                Edit Lecture
+            </a>
 
-                    <dt class="col-sm-4">Course</dt>
-                    <dd class="col-sm-8">
-                        @Model.Enrollment?.Course?.CourseCode
-                        -
-                        @Model.Enrollment?.Course?.CourseName
-                    </dd>
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back
+            </a>
+        </div>
 
-                    <dt class="col-sm-4">Attendance Date</dt>
-                    <dd class="col-sm-8">
-                        @Model.AttendanceDate.ToString("dd MMM yyyy")
-                    </dd>
+    </div>
 
-                    <dt class="col-sm-4">Status</dt>
-                    <dd class="col-sm-8">
-                        @Model.Status
-                    </dd>
+    <div class="row g-4 mb-4">
 
-                </dl>
-
-                <div class="d-flex gap-2">
-                    <a asp-action="Edit"
-                       asp-route-id="@Model.AttendanceRecordId"
-                       class="btn btn-primary">
-                        Edit
-                    </a>
-
-                    <a asp-action="Index"
-                       class="btn btn-outline-secondary">
-                        Back
-                    </a>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div>
+                    <span>Total Students</span>
+                    <strong>@total</strong>
                 </div>
+            </div>
+        </div>
 
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div>
+                    <span>Present</span>
+                    <strong>@present</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div>
+                    <span>Absent</span>
+                    <strong>@absent</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div>
+                    <span>Attendance Rate</span>
+                    <strong>@percentage%</strong>
+                </div>
             </div>
         </div>
 
     </div>
+
+    <div class="dashboard-card mb-4">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <small class="text-muted">Date</small>
+                <div class="fw-semibold">
+                    @Model.LectureDate.ToString("dd MMM yyyy")
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Time</small>
+                <div class="fw-semibold">
+                    @Model.StartTime.ToString(@"hh\:mm")
+                    -
+                    @Model.EndTime.ToString(@"hh\:mm")
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <small class="text-muted">Topic</small>
+                <div class="fw-semibold">
+                    @Model.Topic
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h5 class="fw-bold mb-3">
+            Student Attendance
+        </h5>
+
+        @if (!records.Any())
+        {
+            <div class="alert alert-warning mb-0">
+                Attendance has not been marked for this lecture yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Registration No.</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var record in records
+                            .OrderBy(x => x.Student!.RegistrationNumber))
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @record.Student?.FirstName
+                                        @record.Student?.LastName
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @record.Student?.RegistrationNumber
+                                </td>
+
+                                <td>
+                                    @if (record.Status == "Present")
+                                    {
+                                        <span class="badge text-bg-success">
+                                            Present
+                                        </span>
+                                    }
+                                    else if (record.Status == "Absent")
+                                    {
+                                        <span class="badge text-bg-danger">
+                                            Absent
+                                        </span>
+                                    }
+                                    else if (record.Status == "Late")
+                                    {
+                                        <span class="badge text-bg-warning">
+                                            Late
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-secondary">
+                                            Excused
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(record.Remarks)
+                                        ? "-"
+                                        : record.Remarks)
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
 </div>

@@ -26,103 +26,208 @@ namespace StudentManagementSystem.Controllers
         // GET: /Attendance
         public async Task<IActionResult> Index()
         {
-            var records = await _context.AttendanceRecords
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Student)
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Course)
+            var sessions = await _context.AttendanceSessions
+                .Include(a => a.Course)
+                .Include(a => a.AttendanceRecords)
                 .AsNoTracking()
-                .OrderByDescending(a => a.AttendanceDate)
+                .OrderByDescending(a => a.LectureDate)
+                .ThenByDescending(a => a.LectureNumber)
                 .ToListAsync();
 
-            return View(records);
-        }
-
-        // GET: /Attendance/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var record = await _context.AttendanceRecords
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Student)
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Course)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.AttendanceRecordId == id);
-
-            if (record == null)
-            {
-                return NotFound();
-            }
-
-            return View(record);
+            return View(sessions);
         }
 
         // GET: /Attendance/Create
         public async Task<IActionResult> Create()
         {
-            await LoadEnrollments();
-            return View();
+            await LoadCourses();
+            return View(new AttendanceSession
+            {
+                LectureDate = DateTime.Today
+            });
         }
 
         // POST: /Attendance/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AttendanceRecord record)
+        public async Task<IActionResult> Create(AttendanceSession session)
         {
-            ValidateStatus(record.Status);
-
-            bool duplicate = await _context.AttendanceRecords
-                .AnyAsync(a =>
-                    a.EnrollmentId == record.EnrollmentId &&
-                    a.AttendanceDate.Date == record.AttendanceDate.Date);
-
-            if (duplicate)
+            if (session.EndTime <= session.StartTime)
             {
                 ModelState.AddModelError(
-                    "",
-                    "Attendance for this enrollment already exists for this date."
-                );
+                    nameof(session.EndTime),
+                    "End time must be after start time.");
             }
 
             if (!ModelState.IsValid)
             {
-                await LoadEnrollments(record.EnrollmentId);
-                return View(record);
+                await LoadCourses(session.CourseId);
+                return View(session);
             }
 
-            record.AttendanceDate = record.AttendanceDate.Date;
+            var lastLectureNumber = await _context.AttendanceSessions
+                .Where(a => a.CourseId == session.CourseId)
+                .Select(a => (int?)a.LectureNumber)
+                .MaxAsync() ?? 0;
 
-            _context.AttendanceRecords.Add(record);
+            session.LectureNumber = lastLectureNumber + 1;
+            session.CreatedAt = DateTime.Now;
+
+            _context.AttendanceSessions.Add(session);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Attendance record added successfully.";
+            return RedirectToAction(
+                nameof(Mark),
+                new { id = session.AttendanceSessionId });
+        }
 
-            return RedirectToAction(nameof(Index));
+        // GET: /Attendance/Mark/5
+        public async Task<IActionResult> Mark(int id)
+        {
+            var session = await _context.AttendanceSessions
+                .Include(a => a.Course)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.AttendanceSessionId == id);
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            var students = await _context.Enrollments
+                .Where(e =>
+                    e.CourseId == session.CourseId &&
+                    e.Status == "Active")
+                .Include(e => e.Student)
+                .AsNoTracking()
+                .OrderBy(e => e.Student!.RegistrationNumber)
+                .Select(e => e.Student!)
+                .ToListAsync();
+
+            ViewBag.Students = students;
+
+            var existingRecords = await _context.AttendanceRecords
+                .Where(a => a.AttendanceSessionId == id)
+                .ToDictionaryAsync(a => a.StudentId);
+
+            ViewBag.ExistingRecords = existingRecords;
+
+            return View(session);
+        }
+
+        // POST: /Attendance/Mark
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Mark(
+            int id,
+            Dictionary<int, string> statuses,
+            Dictionary<int, string?> remarks)
+        {
+            var session = await _context.AttendanceSessions
+                .FirstOrDefaultAsync(a => a.AttendanceSessionId == id);
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            var studentIds = await _context.Enrollments
+                .Where(e =>
+                    e.CourseId == session.CourseId &&
+                    e.Status == "Active")
+                .Select(e => e.StudentId)
+                .ToListAsync();
+
+            var existingRecords = await _context.AttendanceRecords
+                .Where(a => a.AttendanceSessionId == id)
+                .ToListAsync();
+
+            foreach (var studentId in studentIds)
+            {
+                var status = statuses.ContainsKey(studentId)
+                    ? statuses[studentId]
+                    : "Absent";
+
+                if (!ValidStatuses.Contains(
+                        status,
+                        StringComparer.OrdinalIgnoreCase))
+                {
+                    status = "Absent";
+                }
+
+                var remark = remarks.ContainsKey(studentId)
+                    ? remarks[studentId]
+                    : null;
+
+                var existing = existingRecords
+                    .FirstOrDefault(a => a.StudentId == studentId);
+
+                if (existing == null)
+                {
+                    _context.AttendanceRecords.Add(
+                        new AttendanceRecord
+                        {
+                            AttendanceSessionId = id,
+                            StudentId = studentId,
+                            Status = status,
+                            Remarks = string.IsNullOrWhiteSpace(remark)
+                                ? null
+                                : remark.Trim()
+                        });
+                }
+                else
+                {
+                    existing.Status = status;
+                    existing.Remarks =
+                        string.IsNullOrWhiteSpace(remark)
+                            ? null
+                            : remark.Trim();
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Attendance saved successfully.";
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id });
+        }
+
+        // GET: /Attendance/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var session = await _context.AttendanceSessions
+                .Include(a => a.Course)
+                .Include(a => a.AttendanceRecords)
+                    .ThenInclude(a => a.Student)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    a => a.AttendanceSessionId == id);
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            return View(session);
         }
 
         // GET: /Attendance/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
+            var session = await _context.AttendanceSessions
+                .FindAsync(id);
+
+            if (session == null)
             {
                 return NotFound();
             }
 
-            var record = await _context.AttendanceRecords.FindAsync(id);
+            await LoadCourses(session.CourseId);
 
-            if (record == null)
-            {
-                return NotFound();
-            }
-
-            await LoadEnrollments(record.EnrollmentId);
-
-            return View(record);
+            return View(session);
         }
 
         // POST: /Attendance/Edit/5
@@ -130,77 +235,64 @@ namespace StudentManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            AttendanceRecord record)
+            AttendanceSession session)
         {
-            if (id != record.AttendanceRecordId)
+            if (id != session.AttendanceSessionId)
             {
                 return NotFound();
             }
 
-            ValidateStatus(record.Status);
-
-            bool duplicate = await _context.AttendanceRecords
-                .AnyAsync(a =>
-                    a.EnrollmentId == record.EnrollmentId &&
-                    a.AttendanceDate.Date == record.AttendanceDate.Date &&
-                    a.AttendanceRecordId != record.AttendanceRecordId);
-
-            if (duplicate)
+            if (session.EndTime <= session.StartTime)
             {
                 ModelState.AddModelError(
-                    "",
-                    "Attendance for this enrollment already exists for this date."
-                );
+                    nameof(session.EndTime),
+                    "End time must be after start time.");
             }
 
             if (!ModelState.IsValid)
             {
-                await LoadEnrollments(record.EnrollmentId);
-                return View(record);
+                await LoadCourses(session.CourseId);
+                return View(session);
             }
 
-            var existingRecord = await _context.AttendanceRecords
+            var existing = await _context.AttendanceSessions
                 .FindAsync(id);
 
-            if (existingRecord == null)
+            if (existing == null)
             {
                 return NotFound();
             }
 
-            existingRecord.EnrollmentId = record.EnrollmentId;
-            existingRecord.AttendanceDate = record.AttendanceDate.Date;
-            existingRecord.Status = record.Status;
+            existing.CourseId = session.CourseId;
+            existing.LectureDate = session.LectureDate;
+            existing.StartTime = session.StartTime;
+            existing.EndTime = session.EndTime;
+            existing.Topic = session.Topic;
 
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] =
-                "Attendance record updated successfully.";
+                "Lecture updated successfully.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         // GET: /Attendance/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var record = await _context.AttendanceRecords
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Student)
-                .Include(a => a.Enrollment)
-                    .ThenInclude(e => e!.Course)
+            var session = await _context.AttendanceSessions
+                .Include(a => a.Course)
+                .Include(a => a.AttendanceRecords)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.AttendanceRecordId == id);
+                .FirstOrDefaultAsync(
+                    a => a.AttendanceSessionId == id);
 
-            if (record == null)
+            if (session == null)
             {
                 return NotFound();
             }
 
-            return View(record);
+            return View(session);
         }
 
         // POST: /Attendance/Delete/5
@@ -208,62 +300,35 @@ namespace StudentManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var record = await _context.AttendanceRecords
+            var session = await _context.AttendanceSessions
                 .FindAsync(id);
 
-            if (record == null)
+            if (session == null)
             {
                 return NotFound();
             }
 
-            _context.AttendanceRecords.Remove(record);
+            _context.AttendanceSessions.Remove(session);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] =
-                "Attendance record deleted successfully.";
+                "Lecture attendance deleted successfully.";
 
             return RedirectToAction(nameof(Index));
         }
 
-        private void ValidateStatus(string? status)
+        private async Task LoadCourses(int? selectedCourseId = null)
         {
-            if (string.IsNullOrWhiteSpace(status) ||
-                !ValidStatuses.Contains(
-                    status,
-                    StringComparer.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(
-                    nameof(AttendanceRecord.Status),
-                    "Please select a valid attendance status."
-                );
-            }
-        }
-
-        private async Task LoadEnrollments(int? selectedEnrollmentId = null)
-        {
-            var enrollments = await _context.Enrollments
-                .Include(e => e.Student)
-                .Include(e => e.Course)
-                .Where(e => e.Status == "Active")
+            var courses = await _context.Courses
                 .AsNoTracking()
-                .OrderBy(e => e.Student!.RegistrationNumber)
+                .OrderBy(c => c.CourseCode)
                 .ToListAsync();
 
-            var items = enrollments.Select(e => new
-            {
-                e.EnrollmentId,
-                DisplayText =
-                    $"{e.Student!.RegistrationNumber} - " +
-                    $"{e.Student.FirstName} {e.Student.LastName} - " +
-                    $"{e.Course!.CourseCode}"
-            });
-
-            ViewBag.Enrollments = new SelectList(
-                items,
-                "EnrollmentId",
-                "DisplayText",
-                selectedEnrollmentId
-            );
+            ViewBag.Courses = new SelectList(
+                courses,
+                "CourseId",
+                "CourseCode",
+                selectedCourseId);
         }
     }
 }

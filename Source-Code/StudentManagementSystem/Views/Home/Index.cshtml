@@ -2,81 +2,166 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container mt-5">
+<div class="dashboard-page">
 
-    <div class="text-center mb-5">
+    <div class="dashboard-header">
+        <div>
+            <span class="dashboard-eyebrow">ADMIN DASHBOARD</span>
+            <h1>Student Management System</h1>
+            <p>
+                Manage students, courses, enrollments, attendance and grades
+                from one centralized system.
+            </p>
+        </div>
 
-        <h1 class="display-5 fw-bold">
-            Student Management System
-        </h1>
+        <a asp-controller="Student"
+           asp-action="Create"
+           class="btn btn-primary">
+            + Add Student
+        </a>
+    </div>
 
-        <p class="text-muted">
-            ASP.NET Core MVC | Entity Framework Core | SQL Server
-        </p>
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon">S</div>
+                <div>
+                    <span>Total Students</span>
+                    <strong>@ViewBag.TotalStudents</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon">C</div>
+                <div>
+                    <span>Total Courses</span>
+                    <strong>@ViewBag.TotalCourses</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon">E</div>
+                <div>
+                    <span>Enrollments</span>
+                    <strong>@ViewBag.TotalEnrollments</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon">A</div>
+                <div>
+                    <span>Attendance</span>
+                    <strong>@ViewBag.AttendancePercentage%</strong>
+                </div>
+            </div>
+        </div>
 
     </div>
 
     <div class="row g-4">
 
-        <div class="col-md-3">
+        <div class="col-lg-8">
 
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Total Students</h5>
-
-                    <h2>0</h2>
-
+            <div class="dashboard-card">
+                <div class="card-heading">
+                    <div>
+                        <h5>System Overview</h5>
+                        <p>Quick access to core management modules.</p>
+                    </div>
                 </div>
 
+                <div class="module-grid">
+
+                    <a asp-controller="Student"
+                       asp-action="Index"
+                       class="module-item">
+                        <div class="module-icon">S</div>
+                        <div>
+                            <strong>Students</strong>
+                            <span>Manage student records</span>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Course"
+                       asp-action="Index"
+                       class="module-item">
+                        <div class="module-icon">C</div>
+                        <div>
+                            <strong>Courses</strong>
+                            <span>Manage academic courses</span>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Enrollment"
+                       asp-action="Index"
+                       class="module-item">
+                        <div class="module-icon">E</div>
+                        <div>
+                            <strong>Enrollments</strong>
+                            <span>Manage student enrollments</span>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Attendance"
+                       asp-action="Index"
+                       class="module-item">
+                        <div class="module-icon">A</div>
+                        <div>
+                            <strong>Attendance</strong>
+                            <span>Track attendance records</span>
+                        </div>
+                    </a>
+
+                </div>
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-lg-4">
 
-            <div class="card shadow-sm">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body text-center">
-
-                    <h5>Total Courses</h5>
-
-                    <h2>0</h2>
-
+                <div class="card-heading">
+                    <div>
+                        <h5>Academic Records</h5>
+                        <p>Current system data</p>
+                    </div>
                 </div>
 
-            </div>
+                <div class="record-summary">
+                    <div>
+                        <span>Students</span>
+                        <strong>@ViewBag.TotalStudents</strong>
+                    </div>
 
-        </div>
+                    <div>
+                        <span>Courses</span>
+                        <strong>@ViewBag.TotalCourses</strong>
+                    </div>
 
-        <div class="col-md-3">
+                    <div>
+                        <span>Enrollments</span>
+                        <strong>@ViewBag.TotalEnrollments</strong>
+                    </div>
 
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Attendance</h5>
-
-                    <h2>0%</h2>
-
+                    <div>
+                        <span>Grades</span>
+                        <strong>@ViewBag.TotalGrades</strong>
+                    </div>
                 </div>
 
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Grades</h5>
-
-                    <h2>0</h2>
-
-                </div>
+                <a asp-controller="Student"
+                   asp-action="Index"
+                   class="btn btn-primary w-100 mt-3">
+                    View Student Records
+                </a>
 
             </div>
 

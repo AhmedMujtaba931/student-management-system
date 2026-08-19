@@ -1,0 +1,190 @@
+@model StudentManagementSystem.Models.AttendanceSession
+
+@{
+    ViewData["Title"] = "Mark Attendance";
+    var students =
+        ViewBag.Students as IEnumerable<StudentManagementSystem.Models.Student>
+        ?? Enumerable.Empty<StudentManagementSystem.Models.Student>();
+}
+
+<div class="dashboard-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="dashboard-eyebrow">LECTURE ATTENDANCE</span>
+
+            <h1 class="fw-bold mb-1">
+                Lecture #@Model.LectureNumber
+            </h1>
+
+            <p class="text-muted mb-0">
+                @Model.Course?.CourseCode -
+                @Model.Course?.CourseName
+            </p>
+        </div>
+    </div>
+
+    <div class="dashboard-card mb-4">
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <small class="text-muted">Date</small>
+                <div class="fw-semibold">
+                    @Model.LectureDate.ToString("dd MMM yyyy")
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Time</small>
+                <div class="fw-semibold">
+                    @Model.StartTime.ToString(@"hh\:mm")
+                    -
+                    @Model.EndTime.ToString(@"hh\:mm")
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <small class="text-muted">Topic</small>
+                <div class="fw-semibold">
+                    @Model.Topic
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <form asp-action="Mark"
+              asp-route-id="@Model.AttendanceSessionId"
+              method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+            @if (!students.Any())
+            {
+                <div class="text-center py-5">
+                    <h5>No enrolled students found.</h5>
+                    <p class="text-muted">
+                        Enroll students in this course before taking attendance.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            Enrolled Students
+                        </h5>
+
+                        <small class="text-muted">
+                            Mark attendance for each student.
+                        </small>
+                    </div>
+
+                    <span class="badge text-bg-light">
+                        @students.Count() Students
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Registration No.</th>
+                                <th style="width: 220px;">
+                                    Attendance
+                                </th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @{
+                                int number = 1;
+                            }
+
+                            @foreach (var student in students)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @number
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            @student.FirstName
+                                            @student.LastName
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @student.RegistrationNumber
+                                    </td>
+
+                                    <td>
+                                        <select name="statuses[@student.StudentId]"
+                                                class="form-select form-select-sm">
+
+                                            <option value="Present">
+                                                Present
+                                            </option>
+
+                                            <option value="Absent">
+                                                Absent
+                                            </option>
+
+                                            <option value="Late">
+                                                Late
+                                            </option>
+
+                                            <option value="Excused">
+                                                Excused
+                                            </option>
+
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <input type="text"
+                                               name="remarks[@student.StudentId]"
+                                               class="form-control form-control-sm"
+                                               placeholder="Optional" />
+                                    </td>
+
+                                </tr>
+
+                                number++;
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Attendance
+                    </button>
+
+                </div>
+            }
+
+        </form>
+
+    </div>
+</div>
