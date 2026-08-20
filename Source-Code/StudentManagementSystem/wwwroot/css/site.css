@@ -345,3 +345,39 @@ footer {
         padding-top: 20px;
     }
 }
+/* ================================
+   Authentication
+   ================================ */
+
+.auth-wrapper {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 15px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.auth-card .form-control {
+    min-height: 46px;
+    border-radius: 8px;
+}
+
+.auth-card .btn-primary {
+    min-height: 46px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.auth-card h2 {
+    color: #1f2937;
+}

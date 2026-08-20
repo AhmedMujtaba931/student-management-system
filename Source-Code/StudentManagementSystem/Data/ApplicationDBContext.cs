@@ -15,10 +15,8 @@ namespace StudentManagementSystem.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
-
-        public DbSet<AttendanceSession> AttendanceSessions { get; set; }
         public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
-
+        public DbSet<AttendanceSession> AttendanceSessions { get; set; }
         public DbSet<Grade> Grades { get; set; }
     }
 }
