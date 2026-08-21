@@ -1,0 +1,58 @@
+@model StudentManagementSystem.Models.Grade
+
+@{
+    ViewData["Title"] = "Grade Details";
+    var percentage = Model.TotalMarks > 0
+        ? Math.Round((double)(Model.MarksObtained / Model.TotalMarks) * 100, 2)
+        : 0;
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Grade Details</h1>
+            <p class="text-muted mb-0">Complete assessment record.</p>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.GradeId" class="btn btn-primary me-2">Edit</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h5 class="mb-0">@Model.Student?.FirstName @Model.Student?.LastName &mdash; @Model.Course?.CourseCode</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Student</small>
+                    <strong>@Model.Student?.FirstName @Model.Student?.LastName (@Model.Student?.RegistrationNumber)</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Course</small>
+                    <strong>@Model.Course?.CourseCode - @Model.Course?.CourseName</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Assessment Type</small>
+                    <strong>@Model.AssessmentType</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Marks</small>
+                    <strong>@Model.MarksObtained / @Model.TotalMarks (@percentage%)</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Grade</small>
+                    <strong><span class="badge bg-dark">@(Model.GradeLetter ?? "-")</span></strong>
+                </div>
+                <div class="col-12">
+                    <small class="text-muted d-block">Remarks</small>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.Remarks) ? "Not provided" : Model.Remarks)</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

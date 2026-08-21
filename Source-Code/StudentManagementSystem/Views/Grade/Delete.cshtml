@@ -1,0 +1,53 @@
+@model StudentManagementSystem.Models.Grade
+
+@{
+    ViewData["Title"] = "Delete Grade";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Delete Grade</h1>
+        <p class="text-muted">Please confirm that you want to remove this grade record.</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0">Confirm Deletion</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> This action will permanently remove this grade record.
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Student</small>
+                    <strong>@Model.Student?.FirstName @Model.Student?.LastName</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Course</small>
+                    <strong>@Model.Course?.CourseCode</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Assessment Type</small>
+                    <strong>@Model.AssessmentType</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Marks</small>
+                    <strong>@Model.MarksObtained / @Model.TotalMarks</strong>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="GradeId" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4">Delete Grade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

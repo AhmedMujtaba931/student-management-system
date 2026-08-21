@@ -1,0 +1,19 @@
+@model StudentManagementSystem.Models.Student
+@{
+    ViewData["Title"] = "My Profile";
+}
+<div class="container py-4" style="max-width:640px">
+    <h2 class="mb-4 fw-bold">My Profile</h2>
+    <div class="card border-0 shadow-sm p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Registration No</dt><dd class="col-sm-8">@Model.RegistrationNumber</dd>
+            <dt class="col-sm-4 text-muted">Name</dt><dd class="col-sm-8">@Model.FullName</dd>
+            <dt class="col-sm-4 text-muted">Email</dt><dd class="col-sm-8">@Model.Email</dd>
+            <dt class="col-sm-4 text-muted">Phone</dt><dd class="col-sm-8">@(Model.PhoneNumber ?? "—")</dd>
+            <dt class="col-sm-4 text-muted">Gender</dt><dd class="col-sm-8">@Model.Gender</dd>
+            <dt class="col-sm-4 text-muted">Date of Birth</dt><dd class="col-sm-8">@(Model.DateOfBirth?.ToString("dd MMM yyyy") ?? "—")</dd>
+            <dt class="col-sm-4 text-muted">Address</dt><dd class="col-sm-8">@(Model.Address ?? "—")</dd>
+        </dl>
+    </div>
+    <a asp-action="Dashboard" class="btn btn-outline-secondary mt-3">Back</a>
+</div>

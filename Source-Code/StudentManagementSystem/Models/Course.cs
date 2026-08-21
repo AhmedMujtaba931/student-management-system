@@ -25,6 +25,11 @@ namespace StudentManagementSystem.Models
         [StringLength(500)]
         public string? Description { get; set; }
 
+        [Display(Name = "Assigned Teacher")]
+        public int? TeacherId { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public Teacher? Teacher { get; set; }
     }
 }

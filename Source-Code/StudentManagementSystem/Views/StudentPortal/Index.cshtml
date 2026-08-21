@@ -1,63 +1,126 @@
+@model StudentManagementSystem.Models.Student
+
 @{
-    ViewData["Title"] = "Student Dashboard";
+    ViewData["Title"] = "My Profile";
 }
 
 <div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="fw-bold mb-1">
-                Welcome, @User.Identity?.Name
-            </h1>
-
+            <h2 class="fw-bold mb-1">My Profile</h2>
             <p class="text-muted mb-0">
-                Student Portal
+                View your registered student information and academic details.
             </p>
         </div>
 
-        <form asp-controller="Account"
-              asp-action="Logout"
-              method="post">
-            <button type="submit" class="btn btn-dark">
-                Logout
-            </button>
-        </form>
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
     </div>
 
     <div class="row g-4">
 
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
+        <!-- Student Profile -->
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        Student Information
+                    </h5>
+                </div>
+
                 <div class="card-body">
-                    <h5 class="fw-bold">My Profile</h5>
-                    <p class="text-muted">
-                        View your account information.
-                    </p>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">
+                                Registration Number
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.RegistrationNumber
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">
+                                Student ID
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.StudentId
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">
+                                First Name
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.FirstName
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">
+                                Last Name
+                            </div>
+
+                            <div class="fw-semibold">
+                                @Model.LastName
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
+
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h5 class="fw-bold">My Courses</h5>
-                    <p class="text-muted">
-                        View your enrolled courses.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <!-- Profile Summary -->
+        <div class="col-lg-4">
 
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        Account Summary
+                    </h5>
+                </div>
+
                 <div class="card-body">
-                    <h5 class="fw-bold">Attendance</h5>
-                    <p class="text-muted">
-                        View your attendance records.
+
+                    <div class="mb-3">
+                        <div class="text-muted small">
+                            Student Status
+                        </div>
+
+                        <span class="badge bg-success mt-1">
+                            Active
+                        </span>
+                    </div>
+
+                    <hr />
+
+                    <p class="text-muted small mb-0">
+                        Your student portal provides access to your
+                        academic information and records based on your
+                        assigned account permissions.
                     </p>
+
                 </div>
             </div>
+
         </div>
 
     </div>
+
 </div>

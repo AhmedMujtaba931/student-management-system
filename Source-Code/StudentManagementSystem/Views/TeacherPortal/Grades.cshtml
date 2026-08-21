@@ -1,0 +1,75 @@
+@model List<StudentManagementSystem.Models.Grade>
+
+@{
+    ViewData["Title"] = "My Course Grades";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Grades</h1>
+            <p class="text-muted mb-0">All grades recorded across your assigned courses.</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Assessment</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var grade in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @grade.Student?.FirstName @grade.Student?.LastName
+                                        <div class="text-muted small">@grade.Student?.RegistrationNumber</div>
+                                    </td>
+                                    <td>@grade.Course?.CourseCode</td>
+                                    <td>@grade.AssessmentType</td>
+                                    <td>@grade.MarksObtained / @grade.TotalMarks</td>
+                                    <td><span class="badge bg-dark">@(grade.GradeLetter ?? "-")</span></td>
+                                    <td class="text-center">
+                                        <a asp-action="EditGrade" asp-route-id="@grade.GradeId" class="btn btn-sm btn-warning">Edit</a>
+                                        <form asp-action="DeleteGrade" asp-route-id="@grade.GradeId" method="post" class="d-inline" onsubmit="return confirm('Delete this grade record?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <h5>No grades recorded yet.</h5>
+                    <p class="text-muted">Open a course roster to start adding grades for your students.</p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

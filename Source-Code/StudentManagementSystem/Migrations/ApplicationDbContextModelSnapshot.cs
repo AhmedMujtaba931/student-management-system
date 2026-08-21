@@ -232,26 +232,25 @@ namespace StudentManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceRecordId"));
 
-                    b.Property<int>("AttendanceSessionId")
+                    b.Property<DateTime>("AttendanceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("AttendanceSessionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
                     b.HasKey("AttendanceRecordId");
 
                     b.HasIndex("AttendanceSessionId");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("EnrollmentId");
 
                     b.ToTable("AttendanceRecords");
                 });
@@ -322,7 +321,16 @@ namespace StudentManagementSystem.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("TeacherUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("CourseId");
+
+                    b.HasIndex("CourseCode")
+                        .IsUnique();
+
+                    b.HasIndex("TeacherUserId");
 
                     b.ToTable("Courses");
                 });
@@ -374,12 +382,16 @@ namespace StudentManagementSystem.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("GradeLetter")
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
                     b.Property<decimal>("MarksObtained")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(250)
@@ -389,7 +401,8 @@ namespace StudentManagementSystem.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalMarks")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("GradeId");
 
@@ -447,7 +460,18 @@ namespace StudentManagementSystem.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("StudentId");
+
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Students");
                 });
@@ -505,21 +529,17 @@ namespace StudentManagementSystem.Migrations
 
             modelBuilder.Entity("StudentManagementSystem.Models.AttendanceRecord", b =>
                 {
-                    b.HasOne("StudentManagementSystem.Models.AttendanceSession", "AttendanceSession")
+                    b.HasOne("StudentManagementSystem.Models.AttendanceSession", null)
                         .WithMany("AttendanceRecords")
-                        .HasForeignKey("AttendanceSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AttendanceSessionId");
 
-                    b.HasOne("StudentManagementSystem.Models.Student", "Student")
+                    b.HasOne("StudentManagementSystem.Models.Enrollment", "Enrollment")
                         .WithMany()
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AttendanceSession");
-
-                    b.Navigation("Student");
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("StudentManagementSystem.Models.AttendanceSession", b =>
@@ -533,18 +553,28 @@ namespace StudentManagementSystem.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("StudentManagementSystem.Models.Course", b =>
+                {
+                    b.HasOne("StudentManagementSystem.Models.ApplicationUser", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("StudentManagementSystem.Models.Enrollment", b =>
                 {
                     b.HasOne("StudentManagementSystem.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StudentManagementSystem.Models.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -557,18 +587,33 @@ namespace StudentManagementSystem.Migrations
                     b.HasOne("StudentManagementSystem.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StudentManagementSystem.Models.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentManagementSystem.Models.Student", b =>
+                {
+                    b.HasOne("StudentManagementSystem.Models.ApplicationUser", "User")
+                        .WithOne("StudentProfile")
+                        .HasForeignKey("StudentManagementSystem.Models.Student", "UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudentManagementSystem.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("StudentProfile");
                 });
 
             modelBuilder.Entity("StudentManagementSystem.Models.AttendanceSession", b =>

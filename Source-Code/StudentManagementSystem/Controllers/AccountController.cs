@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentManagementSystem.Data;
 using StudentManagementSystem.Models;
 using StudentManagementSystem.ViewModels;
 
@@ -9,28 +12,32 @@ namespace StudentManagementSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectByRole();
+                return RedirectToRoleDashboard();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
-
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(
@@ -48,7 +55,7 @@ namespace StudentManagementSystem.Controllers
             {
                 ModelState.AddModelError(
                     string.Empty,
-                    "Invalid email or password.");
+                    "Invalid email address or password.");
 
                 return View(model);
             }
@@ -59,35 +66,37 @@ namespace StudentManagementSystem.Controllers
                 model.RememberMe,
                 lockoutOnFailure: false);
 
-            if (!result.Succeeded)
+            if (result.Succeeded)
             {
-                ModelState.AddModelError(
-                    string.Empty,
-                    "Invalid email or password.");
+                if (!string.IsNullOrWhiteSpace(returnUrl) &&
+                    Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
 
-                return View(model);
+                return RedirectToRoleDashboard();
             }
 
-            if (!string.IsNullOrWhiteSpace(returnUrl) &&
-                Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
+            ModelState.AddModelError(
+                string.Empty,
+                "Invalid email address or password.");
 
-            return RedirectByRole();
+            return View(model);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Register()
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectByRole();
+                return RedirectToRoleDashboard();
             }
 
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -97,21 +106,47 @@ namespace StudentManagementSystem.Controllers
                 return View(model);
             }
 
+            var registrationExists = await _context.Students
+                .AnyAsync(s =>
+                    s.RegistrationNumber == model.RegistrationNumber);
+
+            if (registrationExists)
+            {
+                ModelState.AddModelError(
+                    nameof(model.RegistrationNumber),
+                    "This registration number is already registered.");
+
+                return View(model);
+            }
+
+            var existingUser = await _userManager
+                .FindByEmailAsync(model.Email);
+
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(
+                    nameof(model.Email),
+                    "An account with this email already exists.");
+
+                return View(model);
+            }
+
             var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FullName = model.FullName,
+                FullName = $"{model.FirstName} {model.LastName}",
+                PhoneNumber = model.PhoneNumber,
                 EmailConfirmed = true
             };
 
-            var result = await _userManager.CreateAsync(
+            var createResult = await _userManager.CreateAsync(
                 user,
                 model.Password);
 
-            if (!result.Succeeded)
+            if (!createResult.Succeeded)
             {
-                foreach (var error in result.Errors)
+                foreach (var error in createResult.Errors)
                 {
                     ModelState.AddModelError(
                         string.Empty,
@@ -123,15 +158,44 @@ namespace StudentManagementSystem.Controllers
 
             await _userManager.AddToRoleAsync(user, "Student");
 
-            await _signInManager.SignInAsync(
-                user,
-                isPersistent: false);
+            var student = new Student
+            {
+                UserId = user.Id,
+                RegistrationNumber = model.RegistrationNumber,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                DateOfBirth = model.DateOfBirth,
+                Gender = model.Gender,
+                Address = model.Address,
+                CreatedAt = DateTime.Now
+            };
 
-            return RedirectToAction(
-                "Index",
-                "StudentPortal");
+            _context.Students.Add(student);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                await _userManager.DeleteAsync(user);
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Registration could not be completed. Please try again.");
+
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] =
+                "Registration successful. Please login with your account.";
+
+            return RedirectToAction(nameof(Login));
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -141,24 +205,36 @@ namespace StudentManagementSystem.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        [HttpGet]
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();
         }
 
-        private IActionResult RedirectByRole()
+        private IActionResult RedirectToRoleDashboard()
         {
             if (User.IsInRole("Admin"))
             {
                 return RedirectToAction(
                     "Index",
-                    "Admin");
+                    "Home");
             }
 
-            return RedirectToAction(
-                "Index",
-                "StudentPortal");
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction(
+                    "Dashboard",
+                    "StudentPortal");
+            }
+
+            if (User.IsInRole("Teacher"))
+            {
+                return RedirectToAction(
+                    "Dashboard",
+                    "TeacherPortal");
+            }
+
+            return RedirectToAction(nameof(Login));
         }
     }
 }

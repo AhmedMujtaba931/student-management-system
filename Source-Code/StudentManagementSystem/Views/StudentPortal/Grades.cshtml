@@ -1,0 +1,95 @@
+@model List<StudentManagementSystem.Models.Grade>
+
+@{
+    ViewData["Title"] = "My Grades";
+    var averagePercentage = Model.Count > 0
+        ? Math.Round(Model.Average(g => g.TotalMarks > 0 ? (double)(g.MarksObtained / g.TotalMarks) * 100 : 0), 1)
+        : 0;
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">My Grades</h1>
+            <p class="text-muted mb-0">All assessment results recorded against your enrollments.</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Total Records</div>
+                    <div class="fs-3 fw-bold">@Model.Count</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Overall Average</div>
+                    <div class="fs-3 fw-bold">@(Model.Count > 0 ? $"{averagePercentage}%" : "N/A")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Courses Graded</div>
+                    <div class="fs-3 fw-bold">@Model.Select(g => g.CourseId).Distinct().Count()</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Course</th><th>Assessment Type</th><th>Marks Obtained</th>
+                                <th>Total Marks</th><th>Percentage</th><th>Grade</th><th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var grade in Model)
+                            {
+                                var percentage = grade.TotalMarks > 0
+                                    ? Math.Round((double)(grade.MarksObtained / grade.TotalMarks) * 100, 1)
+                                    : 0;
+
+                                <tr>
+                                    <td>
+                                        <strong>@grade.Course?.CourseCode</strong>
+                                        <div class="text-muted small">@grade.Course?.CourseName</div>
+                                    </td>
+                                    <td>@grade.AssessmentType</td>
+                                    <td>@grade.MarksObtained</td>
+                                    <td>@grade.TotalMarks</td>
+                                    <td>@percentage%</td>
+                                    <td><span class="badge bg-dark">@(grade.GradeLetter ?? "-")</span></td>
+                                    <td>@(string.IsNullOrWhiteSpace(grade.Remarks) ? "-" : grade.Remarks)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <h5>No grades recorded yet.</h5>
+                    <p class="text-muted">Grades will appear here once your teachers submit them.</p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

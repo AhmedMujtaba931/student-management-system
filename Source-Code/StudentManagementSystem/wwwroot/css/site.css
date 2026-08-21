@@ -381,3 +381,126 @@ footer {
 .auth-card h2 {
     color: #1f2937;
 }
+/* =========================================================
+   Authentication
+   ========================================================= */
+
+.auth-page {
+    min-height: 100vh;
+    background: #f4f7fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 460px;
+}
+
+.auth-card-wide {
+    max-width: 720px;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+}
+
+.auth-brand {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 16px;
+    border-radius: 14px;
+    background: #0d6efd;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.auth-brand h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #172033;
+    margin-bottom: 8px;
+}
+
+.auth-brand p {
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+.auth-card .form-label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.auth-card .form-control,
+.auth-card .form-select {
+    min-height: 44px;
+    border-radius: 8px;
+}
+
+.auth-card .btn-primary {
+    min-height: 44px;
+    font-weight: 600;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    color: #6b7280;
+}
+
+.auth-footer a {
+    margin-left: 5px;
+    font-weight: 600;
+    text-decoration: none;
+}
+/* Professional dashboard polish */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.dash-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 0.75rem;
+}
+
+.dash-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.card {
+    border-radius: 0.75rem;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
+
+.badge {
+    font-weight: 500;
+}

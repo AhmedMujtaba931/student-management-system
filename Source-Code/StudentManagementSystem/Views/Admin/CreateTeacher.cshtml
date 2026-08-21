@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Create Teacher";
+}
+<div class="container py-4" style="max-width:520px">
+    <h2 class="fw-bold mb-4">Create Teacher</h2>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card border-0 shadow-sm p-4">
+        <form asp-action="CreateTeacher" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="fullName" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required minlength="8" />
+                <div class="form-text">Min 8 characters, uppercase, lowercase, digit, special character.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Teacher</button>
+            <a asp-action="Teachers" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

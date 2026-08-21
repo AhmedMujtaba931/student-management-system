@@ -1,0 +1,45 @@
+@model IEnumerable<StudentManagementSystem.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Teachers";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Teachers</h2>
+        <a asp-action="CreateTeacher" class="btn btn-primary">+ Create Teacher</a>
+    </div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    <div class="card border-0 shadow-sm">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr><th>Name</th><th>Email</th><th></th></tr>
+            </thead>
+            <tbody>
+            @if (Model.Any())
+            {
+                foreach (var t in Model)
+                {
+                    <tr>
+                        <td>@t.FullName</td>
+                        <td>@t.Email</td>
+                        <td class="text-end">
+                            <form asp-action="RemoveTeacher" method="post" class="d-inline"
+                                  onsubmit="return confirm('Remove Teacher role?');">
+                                <input type="hidden" name="userId" value="@t.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="3" class="text-center text-muted py-4">No teachers yet.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary mt-3">Back</a>
+</div>

@@ -1,0 +1,53 @@
+@model StudentManagementSystem.Models.Teacher
+
+@{
+    ViewData["Title"] = "Delete Teacher";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Delete Teacher</h1>
+        <p class="text-muted">Please confirm that you want to remove this teacher.</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0">Confirm Deletion</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> This will permanently remove the teacher record and their login account, and unassign them from any courses.
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Employee Code</small>
+                    <strong>@Model.EmployeeCode</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Name</small>
+                    <strong>@Model.FirstName @Model.LastName</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Email</small>
+                    <strong>@Model.Email</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Department</small>
+                    <strong>@Model.Department</strong>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="TeacherId" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4">Delete Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

@@ -5,15 +5,11 @@ using StudentManagementSystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// MVC
 builder.Services.AddControllersWithViews();
 
-// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -22,9 +18,7 @@ builder.Services
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
-
         options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedAccount = false;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -39,31 +33,44 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
-// Seed roles + default admin
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsDevelopment())
 {
-    var services = scope.ServiceProvider;
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapStaticAssets();
 
-    string[] roles =
-    {
-        "Admin",
-        "Teacher",
-        "Student"
-    };
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+await SeedIdentityAsync(app);
+
+app.Run();
+
+static async Task SeedIdentityAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    string[] roles = { "Admin", "Student", "Teacher" };
 
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
-        {
             await roleManager.CreateAsync(new IdentityRole(role));
-        }
     }
 
-    // Default Admin Account
-    const string adminEmail = "admin@sms.com";
+    const string adminEmail = "admin@sms.local";
     const string adminPassword = "Admin@12345";
 
     var admin = await userManager.FindByEmailAsync(adminEmail);
@@ -74,41 +81,64 @@ using (var scope = app.Services.CreateScope())
         {
             UserName = adminEmail,
             Email = adminEmail,
-            FullName = "System Administrator",
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            FullName = "System Administrator"
         };
 
         var result = await userManager.CreateAsync(admin, adminPassword);
 
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            await userManager.AddToRoleAsync(admin, "Admin");
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Unable to create default administrator: {errors}");
         }
     }
-    else if (!await userManager.IsInRoleAsync(admin, "Admin"))
-    {
+
+    if (!await userManager.IsInRoleAsync(admin, "Admin"))
         await userManager.AddToRoleAsync(admin, "Admin");
+
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    const string teacherEmail = "teacher@sms.local";
+    const string teacherPassword = "Teacher@12345";
+
+    var teacherUser = await userManager.FindByEmailAsync(teacherEmail);
+
+    if (teacherUser == null)
+    {
+        teacherUser = new ApplicationUser
+        {
+            UserName = teacherEmail,
+            Email = teacherEmail,
+            EmailConfirmed = true,
+            FullName = "Demo Teacher"
+        };
+
+        var result = await userManager.CreateAsync(teacherUser, teacherPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(teacherUser, "Teacher");
+
+            bool teacherProfileExists = await context.Teachers.AnyAsync(t => t.UserId == teacherUser.Id);
+
+            if (!teacherProfileExists)
+            {
+                context.Teachers.Add(new Teacher
+                {
+                    UserId = teacherUser.Id,
+                    EmployeeCode = "EMP-001",
+                    FirstName = "Demo",
+                    LastName = "Teacher",
+                    Email = teacherEmail,
+                    Department = "Computer Science",
+                    Designation = "Lecturer",
+                    Gender = "Other",
+                    CreatedAt = DateTime.Now
+                });
+
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapStaticAssets();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-app.Run();

@@ -7,6 +7,10 @@ namespace StudentManagementSystem.Models
         [Key]
         public int StudentId { get; set; }
 
+        [StringLength(450)]
+        [Display(Name = "User Account")]
+        public string? UserId { get; set; }
+
         [Required]
         [StringLength(20)]
         [Display(Name = "Registration Number")]
@@ -43,6 +47,10 @@ namespace StudentManagementSystem.Models
         [StringLength(250)]
         public string? Address { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public ApplicationUser? User { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

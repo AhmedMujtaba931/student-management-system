@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Reports";
+    var byCourse = ViewBag.ByCourse as IEnumerable<dynamic>;
+    var gradeDist = ViewBag.GradeDist as IEnumerable<dynamic>;
+}
+<div class="container py-4">
+    <h2 class="mb-4 fw-bold">Reports</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-semibold">Enrollment by Course</div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light"><tr><th>Course</th><th>Students</th></tr></thead>
+                        <tbody>
+                        @if (byCourse != null)
+                        {
+                            foreach (var item in byCourse)
+                            {
+                                <tr><td>@item.Course</td><td><span class="badge bg-primary">@item.Count</span></td></tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-semibold">Grade Distribution</div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light"><tr><th>Letter</th><th>Count</th></tr></thead>
+                        <tbody>
+                        @if (gradeDist != null)
+                        {
+                            foreach (var item in gradeDist)
+                            {
+                                <tr><td><span class="badge bg-secondary">@item.Letter</span></td><td>@item.Count</td></tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary mt-3">Back to Dashboard</a>
+</div>

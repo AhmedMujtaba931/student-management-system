@@ -149,19 +149,19 @@
 
                     <tbody>
                         @foreach (var record in records
-                            .OrderBy(x => x.Student!.RegistrationNumber))
+                            .OrderBy(x => x.Enrollment!.Student!.RegistrationNumber))
                         {
                             <tr>
 
                                 <td>
                                     <strong>
-                                        @record.Student?.FirstName
-                                        @record.Student?.LastName
+                                        @record.Enrollment?.Student?.FirstName
+                                        @record.Enrollment?.Student?.LastName
                                     </strong>
                                 </td>
 
                                 <td>
-                                    @record.Student?.RegistrationNumber
+                                    @record.Enrollment?.Student?.RegistrationNumber
                                 </td>
 
                                 <td>
@@ -192,9 +192,7 @@
                                 </td>
 
                                 <td>
-                                    @(string.IsNullOrWhiteSpace(record.Remarks)
-                                        ? "-"
-                                        : record.Remarks)
+                                    -
                                 </td>
 
                             </tr>

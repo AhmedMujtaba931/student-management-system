@@ -1,0 +1,77 @@
+@model IEnumerable<StudentManagementSystem.Models.Grade>
+
+@{
+    ViewData["Title"] = "Grades";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>Grades</h2>
+            <p class="text-muted">Manage academic grades and results for all students.</p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">+ Add Grade</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Assessment Type</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var grade in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @grade.Student?.FirstName @grade.Student?.LastName
+                                        <div class="text-muted small">@grade.Student?.RegistrationNumber</div>
+                                    </td>
+                                    <td>
+                                        <strong>@grade.Course?.CourseCode</strong>
+                                        <div class="text-muted small">@grade.Course?.CourseName</div>
+                                    </td>
+                                    <td>@grade.AssessmentType</td>
+                                    <td>@grade.MarksObtained / @grade.TotalMarks</td>
+                                    <td><span class="badge bg-dark">@(grade.GradeLetter ?? "-")</span></td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@grade.GradeId" class="btn btn-sm btn-info">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@grade.GradeId" class="btn btn-sm btn-warning">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@grade.GradeId" class="btn btn-sm btn-danger">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <h5>No grades found.</h5>
+                    <p class="text-muted">Add your first grade record to get started.</p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

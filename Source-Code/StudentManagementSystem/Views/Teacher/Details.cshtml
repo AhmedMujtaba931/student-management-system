@@ -1,0 +1,88 @@
+@model StudentManagementSystem.Models.Teacher
+
+@{
+    ViewData["Title"] = "Teacher Details";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Teacher Details</h1>
+            <p class="text-muted mb-0">Complete faculty information.</p>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.TeacherId" class="btn btn-primary me-2">Edit Teacher</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0">@Model.FirstName @Model.LastName</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Employee Code</small>
+                            <strong>@Model.EmployeeCode</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Gender</small>
+                            <strong>@Model.Gender</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Email</small>
+                            <strong>@Model.Email</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Phone Number</small>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Department</small>
+                            <strong>@Model.Department</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Designation</small>
+                            <strong>@Model.Designation</strong>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted d-block">Address</small>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Address) ? "Not provided" : Model.Address)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">Assigned Courses</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Courses.Any())
+                    {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var course in Model.Courses)
+                            {
+                                <li class="mb-2">
+                                    <strong>@course.CourseCode</strong>
+                                    <div class="text-muted small">@course.CourseName</div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No courses assigned yet. Assign courses from the Courses page.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

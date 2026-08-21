@@ -15,59 +15,34 @@
         <div class="card-body">
 
             <dl class="row">
+                <dt class="col-sm-3">Course Code</dt>
+                <dd class="col-sm-9">@Model.CourseCode</dd>
 
-                <dt class="col-sm-3">
-                    Course Code
-                </dt>
+                <dt class="col-sm-3">Course Name</dt>
+                <dd class="col-sm-9">@Model.CourseName</dd>
+
+                <dt class="col-sm-3">Credit Hours</dt>
+                <dd class="col-sm-9">@Model.CreditHours</dd>
+
+                <dt class="col-sm-3">Assigned Teacher</dt>
                 <dd class="col-sm-9">
-                    @Model.CourseCode
+                    @(Model.Teacher != null
+                        ? $"{Model.Teacher.FirstName} {Model.Teacher.LastName} ({Model.Teacher.Department})"
+                        : "Unassigned")
                 </dd>
 
-                <dt class="col-sm-3">
-                    Course Name
-                </dt>
+                <dt class="col-sm-3">Description</dt>
                 <dd class="col-sm-9">
-                    @Model.CourseName
+                    @(string.IsNullOrWhiteSpace(Model.Description) ? "No description provided." : Model.Description)
                 </dd>
 
-                <dt class="col-sm-3">
-                    Credit Hours
-                </dt>
-                <dd class="col-sm-9">
-                    @Model.CreditHours
-                </dd>
-
-                <dt class="col-sm-3">
-                    Description
-                </dt>
-                <dd class="col-sm-9">
-                    @(string.IsNullOrWhiteSpace(Model.Description)
-                        ? "No description provided."
-                        : Model.Description)
-                </dd>
-
-                <dt class="col-sm-3">
-                    Created At
-                </dt>
-                <dd class="col-sm-9">
-                    @Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")
-                </dd>
-
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</dd>
             </dl>
 
             <div class="d-flex gap-2 mt-3">
-
-                <a asp-action="Edit"
-                   asp-route-id="@Model.CourseId"
-                   class="btn btn-warning">
-                    Edit
-                </a>
-
-                <a asp-action="Index"
-                   class="btn btn-secondary">
-                    Back to Courses
-                </a>
-
+                <a asp-action="Edit" asp-route-id="@Model.CourseId" class="btn btn-warning">Edit</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to Courses</a>
             </div>
 
         </div>
