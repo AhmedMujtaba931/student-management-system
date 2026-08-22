@@ -1,0 +1,74 @@
+@model List<StudentManagementSystem.ViewModels.UserAccountListItem>
+
+@{
+    ViewData["Title"] = "User Accounts";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>User Accounts</h2>
+            <p class="text-muted">
+                View all login accounts and reset a forgotten password.
+                Passwords are hashed and cannot be viewed directly &mdash;
+                resetting generates a new temporary password.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                var badgeClass = user.Role switch
+                                {
+                                    "Admin" => "bg-danger",
+                                    "Teacher" => "bg-primary",
+                                    "Student" => "bg-success",
+                                    _ => "bg-secondary"
+                                };
+
+                                <tr>
+                                    <td>@user.FullName</td>
+                                    <td>@user.Email</td>
+                                    <td><span class="badge @badgeClass">@user.Role</span></td>
+                                    <td class="text-center">
+                                        <a asp-action="ResetPasswordConfirm" asp-route-id="@user.UserId" class="btn btn-sm btn-warning">
+                                            Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4"><h5>No accounts found.</h5></div>
+            }
+
+        </div>
+    </div>
+
+</div>

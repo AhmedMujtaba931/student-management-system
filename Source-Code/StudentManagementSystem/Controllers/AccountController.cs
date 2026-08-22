@@ -1,3 +1,4 @@
+using StudentManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -198,6 +199,72 @@ namespace StudentManagementSystem.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
+                [AllowAnonymous]
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var genericError = "We could not verify your details. " +
+                "Please check your email and registration/employee code.";
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, genericError);
+                return View(model);
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            bool verified = false;
+
+            if (roles.Contains("Student"))
+            {
+                verified = await _context.Students.AnyAsync(s =>
+                    s.UserId == user.Id &&
+                    s.RegistrationNumber == model.IdentifierCode);
+            }
+            else if (roles.Contains("Teacher"))
+            {
+                verified = await _context.Teachers.AnyAsync(t =>
+                    t.UserId == user.Id &&
+                    t.EmployeeCode == model.IdentifierCode);
+            }
+
+            if (!verified)
+            {
+                ModelState.AddModelError(string.Empty, genericError);
+                return View(model);
+            }
+
+            var newPassword = PasswordGenerator.Generate();
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Password reset failed. Please try again.");
+                return View(model);
+            }
+
+            ViewBag.Email = user.Email;
+            ViewBag.NewPassword = newPassword;
+
+            return View("ForgotPasswordResult");
+        }
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

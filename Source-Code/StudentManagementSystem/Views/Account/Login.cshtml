@@ -93,10 +93,19 @@
                            class="form-label">
                     </label>
 
-                    <input asp-for="Password"
-                           class="form-control"
-                           autocomplete="current-password"
-                           placeholder="Enter your password" />
+                    <div class="input-group">
+                        <input asp-for="Password"
+                               id="loginPassword"
+                               class="form-control"
+                               autocomplete="current-password"
+                               placeholder="Enter your password" />
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                onclick="togglePasswordVisibility('loginPassword', this)">
+                            Show
+                        </button>
+                    </div>
 
                     <span asp-validation-for="Password"
                           class="text-danger">
@@ -125,6 +134,13 @@
 
             </form>
 
+            <!-- Forgot Password -->
+            <div class="text-center mt-2">
+                <a asp-controller="Account" asp-action="ForgotPassword">
+                    Forgot Password?
+                </a>
+            </div>
+
             <!-- Registration -->
             <div class="auth-footer text-center">
 
@@ -146,6 +162,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
     <partial name="_ValidationScriptsPartial" />
 
